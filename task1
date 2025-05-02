@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_LEN 100
+#define MAX_AIRPORTS 100
+
+// Structure to hold country, airport, and arrival time
+typedef struct {
+    char country[MAX_LEN];
+    char airport[MAX_LEN];
+    int arrival_time;
+} Flight;
+
+// Compare function for sorting by arrival time
+int compare(const void *a, const void *b) {
+    return ((Flight *)a)->arrival_time - ((Flight *)b)->arrival_time;
+}
+
+int main() {
+    Flight flights[MAX_AIRPORTS];
+    int n = 0;
+    char input[MAX_LEN];
+
+    // Read multiple lines of input until EOF (Ctrl+D or Ctrl+Z)
+    while (fgets(input, MAX_LEN, stdin)) {
+        // Remove the newline character if present
+        input[strcspn(input, "\n")] = '\0';
+        
+        // Parse the input string using the ';' delimiter
+        char *country = strtok(input, ";");
+        char *airport = strtok(NULL, ";");
+        char *arrival_time_str = strtok(NULL, ";");
+
+        if (country && airport && arrival_time_str) {
+            // Store the data in the flights array
+            strcpy(flights[n].country, country);
+            strcpy(flights[n].airport, airport);
+            flights[n].arrival_time = atoi(arrival_time_str);
+            n++;
+        }
+    }
+
+    // Sort the flights array by arrival time
+    qsort(flights, n, sizeof(Flight), compare);
+
+    // Print the sorted result
+    for (int i = 0; i < n; i++) {
+        printf("(%s) : %s -> %d\n", flights[i].country, flights[i].airport, flights[i].arrival_time);
+    }
+
+    return 0;
+}
