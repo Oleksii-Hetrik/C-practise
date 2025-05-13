@@ -1,0 +1,97 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct{
+    char athlete_code[11];
+    char athlete_name[31];
+    int age;
+    double weight;
+} ATHLETE;
+
+int cmp(const void *left, const void *right)
+{
+    ATHLETE *a = (ATHLETE *)left;
+    ATHLETE *b = (ATHLETE *)right;
+    if(a->age != b->age)
+    {
+        return - (a->age - b->age);
+    }
+    if(a->weight != b->weight)
+    {
+        if(a->weight < b->weight)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    if(strcmp(a->athlete_name, b->athlete_name))
+    {
+        return strcmp(a->athlete_name, b->athlete_name);
+    }
+    return strcmp(a->athlete_code, b->athlete_code);
+    
+}
+
+int main(int argc, char *argv[])
+{
+    ATHLETE athlets[300];
+    char line[101];
+// errors
+    if(argc < 2)
+    {
+        printf("No file to read form\n");
+        fprintf(stderr, "No file to read form\n");
+        return 4;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        printf( "file can not be opened\n");
+        fprintf(stderr, "file can not be opened\n");
+        return 6;
+    }
+    fgets(line, 101, file);
+    int count = 0;
+    while(count < 300)
+    {
+        if(line[0] == 'E' && line[1] == 'N' && line[2] == 'D' && line[3] == '\n')
+        {
+            break;
+        }
+        strcpy(athlets[count].athlete_code, strtok(line, ";"));
+        strcpy(athlets[count].athlete_name, strtok(NULL, ";"));
+        athlets[count].age = atoi(strtok(NULL, ";"));
+        athlets[count].weight = atof(strtok(NULL, ";"));
+        // printf("%s;%s;%d;%.2f\n", athlets[count].athlete_code, athlets[count].athlete_name, athlets[count].age, athlets[count].weight);
+        fgets(line, 101, file);
+        count++;
+    }
+    fclose(file);
+
+    //qsort
+    qsort(athlets, count, sizeof(ATHLETE), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No file to write into\n");
+        return 7;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "file can not be opened\n");
+        return 8;
+    }
+    for(int i = 0; i < count; i++)
+    {
+        fprintf(file, "%s;%s;%d;%.2f\n", athlets[i].athlete_code, athlets[i].athlete_name, athlets[i].age, athlets[i].weight);
+    }
+    fprintf(file, "END\n");
+
+    fclose(file);
+    // printf("success\n");
+    return EXIT_SUCCESS;
+}
