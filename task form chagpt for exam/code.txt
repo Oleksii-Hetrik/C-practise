@@ -1,0 +1,82 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    int id;
+    char name[31];
+    int salary;
+    int years;
+} EMPLOYEE;
+
+int cmp(const void *left, const void *right)
+{
+    EMPLOYEE *a = (EMPLOYEE *) left;
+    EMPLOYEE *b = (EMPLOYEE *) right;
+    if (a->salary != b->salary)
+    {
+        return - (a->salary - b->salary);
+    }
+    if (a->years != b->years)
+    {
+        return a->years - b->years;
+    }
+    if (a->id != b->id)
+    {
+        return a->i - b->id;
+    }
+}
+
+int main(int argc, char* argv[])
+{
+    if(argc < 2)
+    {
+        fprintf(stderr, "No input argument in comand line");
+        return 3;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file) 
+    {
+        fprintf(stderr, "%s cannot be opened", argv[1]);
+        return 4;
+    }
+    char line[100];
+    fgets(line, sizeof(line), file);
+    int count = atoi(line);
+    EMPLOYEE emp[count];
+    for (int i = 0; i < count; i++)
+    {
+        fgets(line, sizeof(line), file);
+        emp[i].id = atoi(strtok(line, ";"));
+        strcpy(emp.name[i], strtok(NULL, ";"))
+        emp[i].salary = atoi(strtok(NULL, ";"));
+        emp[i].years = atoi(strtok(NULL, ";"));
+    }
+    fclose(file);
+    qsort(emp, count, sizeof(EMPLOYEE), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No output argument in comand line");
+        return 5;
+    }
+    file = fopen(argv[2], "w");
+    if(!file) 
+    {
+        fprintf(stderr, "%s cannot be opened", argv[2]);
+        return 6;
+    }
+    fprintf(file, "%d\n", count);
+    for(int i = 0; i < count; i++)
+    {
+        fprintf(file, "%d;%s;%d;%d\n",
+        emp[i].id,
+        emp[i].name,
+        emp[i].salary,
+        emp[i].years
+        );
+    }
+
+    printf("success\n");
+    fclose(file);
+    return EXIT_SUCCESS
+}
