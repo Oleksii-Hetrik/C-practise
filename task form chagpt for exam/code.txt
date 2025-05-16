@@ -78,5 +78,5 @@ int main(int argc, char* argv[])
 
     printf("success\n");
     fclose(file);
-    return EXIT_SUCCESS
+    return EXIT_SUCCESS;
 }
