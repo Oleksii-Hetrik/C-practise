@@ -77,6 +77,6 @@ int main(int argc, char*argv[])
         prod[i].stock);
     }
     
-    printf("success\n");
+   // printf("success\n");
     return EXIT_SUCCESS;
 }
