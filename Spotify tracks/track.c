@@ -1,0 +1,76 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char title[41];
+    int length;
+    int plays;
+} TRACK;
+
+int cmp(const void * left, const void * right)
+{
+    TRACK *a = (TRACK *) left;
+    TRACK *b = (TRACK *) right;
+    if(a->plays != b->plays)
+    {
+        return -(a->plays - b->plays);
+    }
+    if(a->length != b->length)
+    {
+        return (a->length - b->length);
+    }
+    if(strcmp(a->title, b->title) != 0)
+    {
+        return strcmp(a->title, b->title);
+    }
+}
+int main(int argc, char *argv[])
+{
+    char line[61];
+    if(argc < 2)
+    {
+        fprintf(stderr, "No input file given");
+        return 1;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        fprintf(stderr, " input file can not be opened");
+        return 2;
+    }
+    int n = atoi(fgets(line, sizeof(line), file));
+    TRACK tracks[n];
+    for(int i = 0; i < n; i++)
+    {
+        fgets(line, sizeof(line), file);
+        strcpy(tracks[i].title, strtok(line, ";"));
+        tracks[i].length = atoi(strtok(NULL, ";"));
+        tracks[i].plays = atoi(strtok(NULL, ";"));
+    }
+    fclose(file);
+    qsort(tracks, n, sizeof(TRACK), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No output file given");
+        return 3;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "output file can not be opened");
+        return 4;
+    }
+    fprintf(file, "%d\n", n);
+    for(int i = 0; i < n; i++)
+    {
+        fprintf(file, "%s;%d;%d\n",
+        tracks[i].title,
+        tracks[i].length,
+        tracks[i].plays
+        );
+    }
+    fclose(file);
+ //   printf("sucess\n");
+    return EXIT_SUCCESS;
+}
