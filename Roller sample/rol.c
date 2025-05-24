@@ -85,6 +85,6 @@ int main(int argc, char *argv[])
         );
     }
     fprintf(file, "END\n");
-    printf("success\n");
+    printf("SUCCESS: %d roller coasters processed\n", count);
     return EXIT_SUCCESS;
 }
