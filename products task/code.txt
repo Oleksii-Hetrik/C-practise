@@ -1,0 +1,90 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char product_id[10 + 1];
+    int quantity;
+    char item_name[40 + 1];
+    double price;
+} PRODUCT;
+int cmp (const void *left, const void *right)
+{
+    PRODUCT *a = (PRODUCT *) left;
+    PRODUCT *b = (PRODUCT *) right;
+    if(a->item_name != b->item_name)
+    {
+        return a->item_name - b->item_name;
+    }
+    if(a->price != b->price)
+    {
+        if((a->price - b->price) < 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return - 1;
+        }
+    }
+    if(a->quantity  != b->quantity )
+    {
+        return a->quantity  - b->quantity;
+    }
+    return a->product_id - b->product_id;
+}
+
+int main(int argc, char *argv[])
+{
+    char line[60 + 2];
+    int count = 0;
+    if(argc < 2)
+    {
+        fprintf(stderr, "no input file given\n");
+        return 3;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        fprintf(stderr, "input file can not be opened\n");
+        return 4;
+    }
+    PRODUCT prod[150];
+    while (fgets(line, sizeof(line), file))
+    {
+        if(count > 150)
+        {
+            break;
+        }
+        strcpy(prod[count].product_id, strtok(line, ";"));
+        prod[count].quantity = atoi(strtok(NULL, ";"))
+        strcpy(prod[count].item_name, strtok(NULL, ";"));
+        prod[count].price = atof(strtok(NULL, ";"))
+        count++;
+    }
+    fclose(file);
+    qsort(prod, count, sizeof(PRODUCT), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "no output file given\n");
+        return 5;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "output file can not be opened\n");
+        return 7;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(file, "%s;%d;%s;%.2f\n", 
+        prod[i].product_id,
+        prod[i].quantity,
+        prod[i].item_name,
+        prod[i].price
+        );
+    }
+    fclose(file);
+    print("success\n");
+    return EXIT_SUCCESS;
+}
