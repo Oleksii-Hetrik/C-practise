@@ -89,6 +89,6 @@ int main(int argc, char *argv[])
         );
     }
     fclose(file);
-    printf("success\n");
+  //  printf("success\n");
     return EXIT_SUCCESS;
 }

@@ -1,0 +1,9 @@
+8
+S004;Alice;Brown;4.10
+S008;Eve;Brown;4.50
+S005;Bob;Doe;3.90
+S001;John;Doe;3.85
+S007;Diana;Jones;4.00
+S003;Peter;Jones;3.50
+S006;Charlie;Smith;3.75
+S002;Jane;Smith;4.20

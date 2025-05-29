@@ -1,0 +1,84 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct {
+    char student_id[8 + 1];
+    char first_name[20 + 1];
+    char last_name[20 + 1];
+    double grade_average;
+}STUDENT;
+
+int cmp(const void *left, const void *right)
+{
+    STUDENT *a = (STUDENT *)left;
+    STUDENT *b = (STUDENT *)right;
+    if(strcmp(a->last_name, b->last_name) != 0)
+    {
+        return strcmp(a->last_name, b->last_name);
+    }
+    if(strcmp(a->first_name, b->first_name) != 0)
+    {
+        return strcmp(a->first_name, b->first_name);
+    }
+    if(a->grade_average != b->grade_average)
+    {
+        if((a->grade_average - b->grade_average) < 0) return 1;
+        if((a->grade_average - b->grade_average) > 0) return -1;        
+    }
+    return strcmp(a->student_id , b->student_id);
+}
+
+int main(int argc, char *argv[])
+{
+    char line[70 + 2];
+
+    if(argc < 2)
+    {
+        fprintf(stderr, "No input file given\n");
+        return 3;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        fprintf(stderr, "input file can not be opened\n");
+        return 4;
+    }
+    int count = atoi(fgets(line, sizeof(line), file));
+    STUDENT student[count];
+    for (int i = 0; i < count; i++)
+    {
+        fgets(line, sizeof(line), file);
+        line[strcspn(line, "\n")] = 0;
+        strcpy(student[i].student_id, strtok(line, ";"));
+        strcpy(student[i].first_name, strtok(NULL, ";"));
+        strcpy(student[i].last_name, strtok(NULL, ";"));
+        student[i].grade_average = atof(strtok(NULL, ";"));
+    }
+    fclose(file);
+    qsort(student, count, sizeof(STUDENT), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No output file given\n");
+        return 5;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "output file can not be opened\n");
+        return 7;
+    }
+    fprintf(file, "%d\n", count);
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(file, "%s;%s;%s;%.2f\n", 
+        student[i].student_id,
+        student[i].first_name,
+        student[i].last_name,
+        student[i].grade_average
+        );
+    }
+    fclose(file);
+   // printf("success\n");
+    return EXIT_SUCCESS;
+}
