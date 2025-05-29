@@ -1,0 +1,99 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct{
+    char isbn[17 + 1];
+    char title[80 + 1];
+    char author[40 + 1];
+    int publication_year;
+}BOOK;
+
+int cmp(const void *left, const void *right)
+{
+    BOOK *a = (BOOK *)left;
+    BOOK *b = (BOOK *)right;
+    if(strcmp(a->author, b->author) != 0)
+    {
+        return strcmp(a->author, b->author);
+    }
+    if(a->publication_year != b->publication_year)
+    {
+        return -(a->publication_year - b->publication_year);
+    }
+    if(strcmp(a->title, b->title) != 0)
+    {
+        return strcmp(a->title, b->title);
+    }
+    if(strcmp(a->isbn , b->isbn ) != 0)
+    {
+        return strcmp(a->isbn , b->isbn );
+    }
+}
+int main(int argc, char *argv[])
+{
+    char line[150 + 1];
+    BOOK books[200];
+    int count = 0;
+    if(argc < 2)
+    {
+        fprintf(stderr, "No input file given\n");
+        return 3;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        fprintf(stderr, "input file can not be opened\n");
+        return 4;
+    }
+    while(fgets(line, sizeof(line), file))
+    {
+        line[strcspn(line, "\n")] = 0;
+        if(strcmp(line, "END") == 0)
+        {
+            printf("break\n");
+            break;
+        }
+        if(count > 199)
+        {
+            fprintf(stderr, "END marker is not found in the file\n");
+            return 10;
+        }
+        strcpy(books[count].isbn, strtok(line, ";"));
+        strcpy(books[count].title, strtok(NULL, ";"));
+        strcpy(books[count].author, strtok(NULL, ";"));
+        books[count].publication_year = atoi(strtok(NULL, ";"));
+        count++;
+    }
+    if(strcmp(line, "END") != 0)
+    {
+        fprintf(stderr, "missing END terminator\n");
+        return 10;
+    }
+    fclose(file);
+    qsort(books, count, sizeof(BOOK), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No output file given\n");
+        return 5;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "output file can not be opened\n");
+        return 7;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(file, "%s;%s;%s;%d\n",
+        books[i].isbn,
+        books[i].title,
+        books[i].author,
+        books[i].publication_year
+        );
+    }
+    fprintf("END\n");
+    fclose(file);
+    printf("success\n");
+    return EXIT_SUCCESS;
+}
