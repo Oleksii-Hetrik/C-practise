@@ -32,7 +32,7 @@ int cmp(const void *left, const void *right)
 }
 int main(int argc, char *argv[])
 {
-    char line[150 + 1];
+    char line[150 + 2];
     BOOK books[200];
     int count = 0;
     if(argc < 2)

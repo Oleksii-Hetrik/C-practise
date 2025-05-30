@@ -1,0 +1,92 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct{
+    char timestamp[19 + 1];
+    char sensor_id[10 + 1];
+    double temperature;
+    int humidity;
+} SENSOR_DATA;
+
+int cmp (const void *left, const void *right)
+{
+    SENSOR_DATA *a = (SENSOR_DATA *)left;
+    SENSOR_DATA *b = (SENSOR_DATA *)right;
+    if(strcmp(a->timestamp, b->timestamp) != 0)
+    {
+        return strcmp(a->timestamp, b->timestamp);
+    }
+    if(a->temperature != b->temperature)
+    {
+        if((a->temperature - b->temperature) < 0)
+        {
+            return 1;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    if(strcmp(a->sensor_id, b->sensor_id) != 0)
+    {
+        return strcmp(a->sensor_id , b->sensor_id );
+    }
+    return a->humidity - b->humidity;
+}
+int main(int argc, char *argv[])
+{
+    char line[80 + 2];
+    SENSOR_DATA sens[250];
+    if(argc < 2)
+    {
+        fprintf(stderr, "No input file given\n");
+        return 3;
+    }
+    FILE *file = fopen(argv[1], "r");
+    if(!file)
+    {
+        fprintf(stderr, "input file can not be opened\n");
+        return 4;
+    }
+    int count = 0;
+    while(fgets(line, sizeof(line), file))
+    {
+        line[strcspn(line, "\n")] = 0;
+        if(strcmp(line, "END") == 0)
+        {
+            break;
+        }
+        strcpy(sens[count].timestamp, strtok(line, ","));
+        strcpy(sens[count].sensor_id, strtok(NULL, ","));
+        sens[count].temperature = atof(strtok(NULL, ","));
+        sens[count].humidity = atoi(strtok(NULL, ","));
+        count++;
+    }
+    fclose(file);
+    qsort(sens, count, sizeof(SENSOR_DATA), cmp);
+    if(argc < 3)
+    {
+        fprintf(stderr, "No output file given\n");
+        return 5;
+    }
+    file = fopen(argv[2], "w");
+    if(!file)
+    {
+        fprintf(stderr, "output file can not be opened\n");
+        return 7;
+    }
+    for (int i = 0; i < count; i++)
+    {
+        fprintf(file, "%s,%s,%.2f,%d\n",
+        sens[i].timestamp,
+        sens[i].sensor_id,
+        sens[i].temperature,
+        sens[i].humidity
+        );
+    }
+    fprintf(file, "END\n");
+    fclose(file);
+    printf("success\n");
+    return EXIT_SUCCESS;
+}
